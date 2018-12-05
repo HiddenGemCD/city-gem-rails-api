@@ -16,14 +16,16 @@ Rails.application.routes.draw do
       # create posts
       post 'users/:id/posts', to: 'posts#create'
       #acts_as_votable for vote function
-      
-      resources :posts do
-        resources :comments
-        member do 
-          put "upvote", to: "posts#upvote"
-          put "unvote", to: "posts#downvote"
-        end
-      end
+    
+      put 'users/:user_id/posts/:id/upvote', to: 'posts#upvote'
+      put 'users/:user_id/posts/:id/unvote', to: 'posts#unvote'
+
+      # resources :posts do
+      #   member do 
+      #     put "upvote", to: "posts#upvote"
+      #     put "unvote", to: "posts#downvote"
+      #   end
+      # end
       #acts_as taggable for tag function
 
       # show users' posts at profile page

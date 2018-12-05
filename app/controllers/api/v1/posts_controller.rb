@@ -58,20 +58,26 @@ class Api::V1::PostsController < Api::V1::BaseController
         @post.city_id = 1 # use city_id = 1 temporary
         # @post.avatar_url = User.find(params[:id]).avatar_url
         if @post.save
-            render :show, status: :created
+            render json: {}, status: :created
         else
             render_error
         end
     end
 
     def upvote
-        @post.upvote_by current_user
-        redirect_to :back
+        @user = User.find(params[:user_id])
+        @post.upvote_by @user
+        # @post.save
+        puts @post.votes_for.size
+        render json: {}, status: :ok
     end
     
     def unvote
-        @post.downvote_by current_user
-        redirect_to :back
+        @user = User.find(params[:user_id])
+        @post.unvote_by @user
+        # @post.save
+        puts @post.votes_for.size
+        render json: {}, status: :ok
     end
   
     private
@@ -81,7 +87,7 @@ class Api::V1::PostsController < Api::V1::BaseController
     end
 
     def post_params
-    params.require(:post).permit(:name, :description, :user_id, :city_id)
+    params.require(:post).permit(:name, :description, :user_id)
     end
 
     def render_error

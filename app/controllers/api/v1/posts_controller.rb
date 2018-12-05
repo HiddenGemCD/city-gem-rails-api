@@ -1,6 +1,6 @@
 # app/controllers/api/v1/posts_controller.rb
 class Api::V1::PostsController < Api::V1::BaseController
-    before_action :set_post, only: [:show, :update, :destroy]
+    before_action :set_post, only: [:show, :update, :destroy, :upvote, :unvote]
   
     def posts_by_recent
       @posts = Post.all.order(created_at: :desc)
@@ -62,6 +62,16 @@ class Api::V1::PostsController < Api::V1::BaseController
         else
             render_error
         end
+    end
+
+    def upvote
+        @post.upvote_by current_user
+        redirect_to :back
+    end
+    
+    def unvote
+        @post.downvote_by current_user
+        redirect_to :back
     end
   
     private

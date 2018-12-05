@@ -18,4 +18,4 @@ class Api::V1::BaseController < ActionController::Base
   
       render json: response, status: :internal_server_error
     end
-  end
+end

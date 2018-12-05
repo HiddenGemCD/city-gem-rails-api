@@ -15,6 +15,7 @@ gem 'bootsnap', '>= 1.1.0', require: false
 
 gem 'acts_as_votable', '~> 0.12.0'
 gem 'devise'
+gem 'rest-client'
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]

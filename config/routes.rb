@@ -2,12 +2,15 @@ Rails.application.routes.draw do
   devise_for :users
   namespace :api, defaults: { format: :json } do
     namespace :v1 do
-    
+      
+      # resources :posts, only: [:show]
+      get 'posts/:id', to: 'posts#show'
+
       post '/login', to: "users#login"
       post '/update_user_info', to: "users#update_user_info"
       
       # show posts at index page
-      get 'posts/posts_by_recent', to: 'posts#posts_by_recent' # done
+      get 'posts', to: 'posts#index' # done
       get 'posts/posts_by_trend', to: 'posts#posts_by_trend'
       get 'posts/posts_by_category', to: 'posts#posts_by_category'
       get 'posts/posts_by_city', to: 'posts#posts_by_city' 
@@ -20,16 +23,8 @@ Rails.application.routes.draw do
       put 'users/:user_id/posts/:id/upvote', to: 'posts#upvote'
       put 'users/:user_id/posts/:id/unvote', to: 'posts#unvote'
 
-      # resources :posts do
-      #   member do 
-      #     put "upvote", to: "posts#upvote"
-      #     put "unvote", to: "posts#downvote"
-      #   end
-      # end
-      #acts_as taggable for tag function
-
       # show users' posts at profile page
-      get 'posts/users_posts_by_recent', to: 'posts#users_posts_by_recent'
+      get 'users/:id/posts/by_recent', to: 'posts#users_posts_by_recent'
       get 'posts/users_posts_by_category', to: 'posts#users_posts_by_category'
       get 'posts/users_posts_by_city', to: 'posts#users_posts_by_city'
       get 'posts/users_posts_by_search', to: 'posts#users_posts_by_search'
@@ -38,7 +33,7 @@ Rails.application.routes.draw do
       put 'users/:id/posts/:id', to: 'posts#update'
 
       #delete posts
-      delete 'users/:id/posts/:id', to: 'posts#destroy'
+      delete 'posts/:id', to: 'posts#destroy'
       
       # edit user intro 
       post 'users/:id/intro', to: 'users#edit_intro'

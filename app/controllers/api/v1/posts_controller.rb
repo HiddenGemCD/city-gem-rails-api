@@ -2,7 +2,7 @@
 class Api::V1::PostsController < Api::V1::BaseController
     before_action :set_post, only: [:show, :update, :destroy, :upvote, :unvote]
   
-    def posts_by_recent
+    def index
       @posts = Post.all.order(created_at: :desc)
   
       render json: {
@@ -23,6 +23,7 @@ class Api::V1::PostsController < Api::V1::BaseController
     end
 
     def users_posts_by_recent
+        puts params
         @user_posts = Post.where(user_id: params[:id] )
         render json: {
           posts: @user_posts
@@ -38,14 +39,20 @@ class Api::V1::PostsController < Api::V1::BaseController
     def users_posts_by_search
     end
   
+    def show 
+        puts @post
+        render json: {
+            post: @post
+        }
+    end
     
-   def update
-     if @post.update(post_params)
-    #    render :show
-     else
-       render_error
-     end
-   end
+    def update
+        if @post.update(post_params)
+        #    render :show
+        else
+        render_error
+        end
+    end
   
     def destroy
         @post.destroy
@@ -83,15 +90,15 @@ class Api::V1::PostsController < Api::V1::BaseController
     private
     
     def set_post
-    @post = Post.find(params[:id])
+        @post = Post.find(params[:id])
     end
 
     def post_params
-    params.require(:post).permit(:name, :description, :user_id)
+        params.require(:post).permit(:name, :description, :user_id)
     end
 
     def render_error
-    render json: { errors: @post.errors.full_messages }, status: :unprocessable_entity
+        render json: { errors: @post.errors.full_messages }, status: :unprocessable_entity
     end
 
 end

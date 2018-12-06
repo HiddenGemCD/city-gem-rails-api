@@ -2,12 +2,10 @@
 json.posts do
     json.array! @posts do |post|
       json.extract! post, :id, :name, :description, :user_id, :city_id, :votes
-    #   json.liked_by_current_user !!(@current_user && @current_user.liked?(post))
       json.upvoted_by_current_user post.voted_up_by? @current_user
-          
-  
+        
       json.user do
-            json.extract! post.user, :name, :avatar
+            json.extract! post.user, :name, :avatar, :city, :gender
       end
     end
   end

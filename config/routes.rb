@@ -19,9 +19,9 @@ Rails.application.routes.draw do
       # create posts
       post 'users/:id/posts', to: 'posts#create'
       #acts_as_votable for vote function
-    
       put 'users/:user_id/posts/:id/upvote', to: 'posts#upvote'
       put 'users/:user_id/posts/:id/unvote', to: 'posts#unvote'
+      get 'posts/:id/votes', to: 'posts#votes'
 
       # show users' posts at profile page
       get 'users/:id/posts/by_recent', to: 'posts#users_posts_by_recent'

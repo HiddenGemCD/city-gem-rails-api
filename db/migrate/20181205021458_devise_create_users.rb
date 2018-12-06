@@ -9,7 +9,7 @@ class DeviseCreateUsers < ActiveRecord::Migration[5.2]
       t.string :city, default: ""
       t.string :gender, default: ""
       t.string :avatar, default: ""
-      t.string :open_id, default: ""
+      t.string :open_id
 
       ## Database authenticatable
       # t.string :email,              null: false, default: ""

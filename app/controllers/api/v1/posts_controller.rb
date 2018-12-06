@@ -60,9 +60,9 @@ class Api::V1::PostsController < Api::V1::BaseController
     end
     
     def create
+        puts params
         @post = Post.new(post_params)
         @post.user_id = params[:id] if params[:id]
-        @post.city_id = 1 # use city_id = 1 temporary
         # @post.avatar_url = User.find(params[:id]).avatar_url
         if @post.save
             render json: {}, status: :created
@@ -74,17 +74,23 @@ class Api::V1::PostsController < Api::V1::BaseController
     def upvote
         @user = User.find(params[:user_id])
         @post.upvote_by @user
-        # @post.save
+        @post.votes += 1
+        @post.save
+        @count = @post.votes_for.size
+        puts @post.name
         puts @post.votes_for.size
-        render json: {}, status: :ok
+        render json: { count: @count}, status: :ok
     end
     
     def unvote
         @user = User.find(params[:user_id])
         @post.unvote_by @user
-        # @post.save
+        @post.votes -= 1
+        @post.save
+        @count = @post.votes_for.size
+        puts @post.name
         puts @post.votes_for.size
-        render json: {}, status: :ok
+        render json: { count: @count }, status: :ok
     end
   
     private

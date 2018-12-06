@@ -3,11 +3,9 @@ class Api::V1::PostsController < Api::V1::BaseController
     before_action :set_post, only: [:show, :update, :destroy, :upvote, :unvote]
   
     def index
-      @posts = Post.all.order(created_at: :desc)
-  
-      render json: {
-       posts: @posts
-      }
+        # puts params
+        @current_user = User.find(params[:user_id])
+        @posts = Post.all.order(created_at: :desc)
     end
 
     def posts_by_trend
@@ -76,10 +74,9 @@ class Api::V1::PostsController < Api::V1::BaseController
         @post.upvote_by @user
         @post.votes += 1
         @post.save
-        @count = @post.votes_for.size
         puts @post.name
         puts @post.votes_for.size
-        render json: { count: @count}, status: :ok
+        render json: {}, status: :ok
     end
     
     def unvote
@@ -87,10 +84,9 @@ class Api::V1::PostsController < Api::V1::BaseController
         @post.unvote_by @user
         @post.votes -= 1
         @post.save
-        @count = @post.votes_for.size
         puts @post.name
         puts @post.votes_for.size
-        render json: { count: @count }, status: :ok
+        render json: {}, status: :ok
     end
   
     private

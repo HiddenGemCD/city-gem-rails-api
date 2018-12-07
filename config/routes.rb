@@ -3,9 +3,12 @@ Rails.application.routes.draw do
   namespace :api, defaults: { format: :json } do
     namespace :v1 do
       
+
+
+
+
       # resources :posts, only: [:show]
       get 'posts/:id', to: 'posts#show'
-
       post '/login', to: "users#login"
       post '/update_user_info', to: "users#update_user_info"
       
@@ -19,9 +22,9 @@ Rails.application.routes.draw do
       # create posts
       post 'users/:id/posts', to: 'posts#create'
       #acts_as_votable for vote function
-      put 'users/:user_id/posts/:id/upvote', to: 'posts#upvote'
-      put 'users/:user_id/posts/:id/unvote', to: 'posts#unvote'
-      get 'posts/:id/votes', to: 'posts#votes'
+      # put 'users/:user_id/posts/:id/upvote', to: 'posts#upvote'
+      # put 'users/:user_id/posts/:id/unvote', to: 'posts#unvote'
+      # get 'posts/:id/votes', to: 'posts#votes'
 
       # show users' posts at profile page
       get 'users/:id/posts/by_recent', to: 'posts#users_posts_by_recent'

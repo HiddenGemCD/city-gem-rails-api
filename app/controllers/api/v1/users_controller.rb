@@ -8,10 +8,6 @@ class Api::V1::UsersController < Api::V1::BaseController
           secret: ENV['SECRET'],
           js_code: params[:code], 
           grant_type: "authorization_code" }
-        # { appid: 'wx6a983385b6475bf3',
-        #   secret: '07c66cb4dccd74a7c4830197189b748a',
-        #   js_code: params[:code], 
-        #   grant_type: "authorization_code" }
     end
 
     def wechat_user        

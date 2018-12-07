@@ -1,8 +1,10 @@
 
 json.posts do
     json.array! @posts do |post|
-      json.extract! post, :id, :name, :description, :user_id, :city_id, :votes
-      json.upvoted_by_current_user post.voted_up_by? @current_user
+      json.extract! post, :id, :name, :description, :user_id, :city_id,:category,:latitude,:longitude, :votes
+      # json.upvoted_by_current_user post.voted_up_by? @current_user if @current_user
+      json.city City.find(post[:city_id])
+      json.tags post.tag_list
         
       json.user do
             json.extract! post.user, :name, :avatar, :city, :gender

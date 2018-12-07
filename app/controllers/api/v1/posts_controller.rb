@@ -6,7 +6,7 @@ class Api::V1::PostsController < Api::V1::BaseController
   
     def index
         # puts params
-        @current_user = User.find(params[:user_id])
+        @current_user = User.find(params[:user_id]) if params[:user_id]
         @posts = Post.all.order(created_at: :desc)
     end
 
@@ -63,7 +63,7 @@ class Api::V1::PostsController < Api::V1::BaseController
         @post = Post.new(post_params)
         @post.user_id = params[:id] if params[:id]
         # puts CITIES
-        # puts post_params[:address]
+        puts post_params
         CITIES.each do |city|
             puts params[:address]
             if post_params[:address].match(city)
@@ -108,7 +108,7 @@ class Api::V1::PostsController < Api::V1::BaseController
     end
 
     def post_params
-        params.require(:post).permit(:name, :description, :user_id, :address)
+        params.require(:post).permit(:name, :description, :user_id, :address, :category, :latitude, :longitude)
     end
 
     def render_error

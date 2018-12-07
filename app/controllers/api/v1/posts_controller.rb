@@ -6,7 +6,7 @@ class Api::V1::PostsController < Api::V1::BaseController
   
     def index
         # puts params
-        @current_user = User.find(params[:user_id]) if params[:user_id]
+        # @current_user = User.find(params[:user_id]) if params[:user_id]
         @posts = Post.all.order(created_at: :desc)
     end
 
@@ -24,7 +24,7 @@ class Api::V1::PostsController < Api::V1::BaseController
 
     def users_posts_by_recent
         puts params
-        @user_posts = Post.where(user_id: params[:id] )
+        @user_posts = Post.where(user_id: params[:id] ).order(created_at: :desc)
         render json: {
           posts: @user_posts
         }
@@ -74,6 +74,9 @@ class Api::V1::PostsController < Api::V1::BaseController
                 @city.posts.each { |post| puts post }
             end
         end
+        # puts params[:tagstring]
+        tags = post_params[:tagstring].split(',').map{ |i| i.strip }
+        @post.tag_list.add(tags)
         if @post.save
             render json: {}, status: :created
         else
@@ -101,6 +104,14 @@ class Api::V1::PostsController < Api::V1::BaseController
         render json: {}, status: :ok
     end
 
+    # def tagged
+    #     if params[:tag].present?
+    #       @posts = Post.tagged_with(params[:tag])
+    #     else
+    #       @posts = Post.all
+    #     end
+    # end
+
     private
     
     def set_post
@@ -108,7 +119,7 @@ class Api::V1::PostsController < Api::V1::BaseController
     end
 
     def post_params
-        params.require(:post).permit(:name, :description, :user_id, :address, :category, :latitude, :longitude)
+        params.require(:post).permit(:name, :description, :user_id, :address, :category, :latitude, :longitude, :tagstring )
     end
 
     def render_error

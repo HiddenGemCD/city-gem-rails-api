@@ -1,14 +1,12 @@
-
+json.post_qty @posts.size if @user
 json.posts do
     json.array! @posts do |post|
-      json.extract! post, :id, :name, :description, :user_id, :city_id,:category,:latitude,:longitude, :votes
+      json.extract! post, :id, :name, :description, :user_id, :city_id,:category,:latitude,:longitude, :votes, :created_at
       # json.upvoted_by_current_user post.voted_up_by? @current_user if @current_user
+      
+      json.time_ago time_ago_in_words(post.created_at)
       json.city City.find(post[:city_id])
       json.tags post.tag_list
-        
-      json.user do
-            json.extract! post.user, :name, :avatar, :city, :gender
-      end
     end
   end
 

@@ -1,5 +1,5 @@
 json.post_qty @posts.size if @user
-json.city_qty @user.posts.map {|post| post.city_id}.uniq.size
+json.city_qty @user.posts.map {|post| post.city_id}.uniq.size if @user
 json.posts do
     json.array! @posts do |post|
       json.extract! post, :id, :name, :description, :user_id, :city_id,:category,:latitude,:longitude, :votes, :created_at

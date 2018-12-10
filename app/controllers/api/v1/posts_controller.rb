@@ -13,7 +13,17 @@ class Api::V1::PostsController < Api::V1::BaseController
         end 
     end
 
-    def posts_by_trend
+    def trend
+        address = Post.all.map {|i| i.address}
+        count = {}
+        address.each do |i|
+            if count[i]
+                count[i] += 1
+            else
+                count[i] = 1
+            end
+        end
+        count
     end
 
     def posts_by_category
@@ -67,6 +77,7 @@ class Api::V1::PostsController < Api::V1::BaseController
         @post.user_id = params[:id] if params[:id]
         # puts CITIES
         puts post_params
+
         CITIES.each do |city|
             puts params[:address]
             if post_params[:address].match(city)

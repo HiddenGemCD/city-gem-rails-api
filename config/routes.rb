@@ -14,10 +14,10 @@ Rails.application.routes.draw do
       
       # show posts at index page
       get 'posts', to: 'posts#index' # done
-      get 'posts/posts_by_trend', to: 'posts#posts_by_trend'
-      get 'posts/posts_by_category', to: 'posts#posts_by_category'
-      get 'posts/posts_by_city', to: 'posts#posts_by_city' 
-      get 'posts/posts_by_search', to: 'posts#posts_by_search'
+      get 'posts_by_trend', to: 'posts#trend'
+      # get 'posts/posts_by_category', to: 'posts#posts_by_category'
+      # get 'posts/posts_by_city', to: 'posts#posts_by_city' 
+      # get 'posts/posts_by_search', to: 'posts#posts_by_search'
 
       # create posts
       post 'users/:id/posts', to: 'posts#create'

@@ -34,7 +34,7 @@ class Api::V1::PostsController < Api::V1::BaseController
         
         @posts
     end
-
+    
     def trend(posts)
         puts "trending ordering"
         @posts = posts

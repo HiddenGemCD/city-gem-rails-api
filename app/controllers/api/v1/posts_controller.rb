@@ -6,43 +6,40 @@ class Api::V1::PostsController < Api::V1::BaseController
   
     def index
         # show user's profile if user_id existed
-
-        puts params
-
         if params[:user_id]
+            puts "profile: show user posts"
             @user = User.find(params[:user_id])
             @posts = @user.posts.order(created_at: :desc)
             if params[:city] || params[:category]
-                @posts = filtered_posts
+                @posts = filtered_posts(@posts)
             end
-
+            return @posts
         else
-            @posts = Post.all.order(created_at: :desc)
+            # show trending index page if no user_id existed
+            # should ordered by trending. How?
+            puts "========================="
+            puts "trending index page"
+            puts params
+            @posts = Post.all
 
+            # if user trigger filter
             if params[:city] || params[:category]
-                @posts = filtered_posts
-            end
-            
-            # # filtered by city
-            # if params[:city]
-            #     @city = City.find_by(name: params[:city]) 
-            #     puts @city
-            #     puts @city.id
-            #     @posts = @posts.where(city_id: @city.id)
-            # end
-            # #filtered by category
-            # if params[:category]
-            #     @posts = @posts.where(category: params[:category])
-            # end
-        end 
+                @posts = filtered_posts(@posts)
+                puts "after filter"
+                puts @posts
+            end  
 
-
-
-
+            @posts = trend(@posts)
+        end
+        
+        @posts
     end
 
-    def trend
-        address = Post.all.map {|i| i.address}
+    def trend(posts)
+        puts "trending ordering"
+        @posts = posts
+        puts @posts
+        address = @posts.map {|i| i.address}
         count = {}
         address.each do |i|
             if count[i]
@@ -51,16 +48,8 @@ class Api::V1::PostsController < Api::V1::BaseController
                 count[i] = 1
             end
         end
-        count
-    end
-
-    def posts_by_category
-    end
-
-    def posts_by_city
-    end
-
-    def posts_by_search
+        count = count.sort_by{|k, v| v}.reverse.to_a
+        count.map {|i| @posts.find_by( address: i[0])} 
     end
 
     def users_posts_by_recent
@@ -69,15 +58,6 @@ class Api::V1::PostsController < Api::V1::BaseController
         render json: {
           posts: @user_posts
         }
-    end
-
-    def users_posts_by_category
-    end
-
-    def users_posts_by_city
-    end
-
-    def users_posts_by_search
     end
   
     def show 
@@ -127,32 +107,24 @@ class Api::V1::PostsController < Api::V1::BaseController
         end
     end
 
-    def upvote
-        @user = User.find(params[:user_id])
-        @post.upvote_by @user
-        @post.votes += 1
-        @post.save
-        puts @post.name
-        puts @post.votes_for.size
-        render json: {}, status: :ok
-    end
+    # def upvote
+    #     @user = User.find(params[:user_id])
+    #     @post.upvote_by @user
+    #     @post.votes += 1
+    #     @post.save
+    #     puts @post.name
+    #     puts @post.votes_for.size
+    #     render json: {}, status: :ok
+    # end
     
-    def unvote
-        @user = User.find(params[:user_id])
-        @post.unvote_by @user
-        @post.votes -= 1
-        @post.save
-        puts @post.name
-        puts @post.votes_for.size
-        render json: {}, status: :ok
-    end
-
-    # def tagged
-    #     if params[:tag].present?
-    #       @posts = Post.tagged_with(params[:tag])
-    #     else
-    #       @posts = Post.all
-    #     end
+    # def unvote
+    #     @user = User.find(params[:user_id])
+    #     @post.unvote_by @user
+    #     @post.votes -= 1
+    #     @post.save
+    #     puts @post.name
+    #     puts @post.votes_for.size
+    #     render json: {}, status: :ok
     # end
 
     private
@@ -169,17 +141,34 @@ class Api::V1::PostsController < Api::V1::BaseController
         render json: { errors: @post.errors.full_messages }, status: :unprocessable_entity
     end
 
-    def filtered_posts
-        if params[:city]
+    def filtered_posts(posts)
+        puts "start filter"
+        puts params
+
+        @posts = posts
+
+        if params[:city] == '' && params[:category] == ''
+            puts "no filter"
+            puts @posts
+            return @posts
+        end
+
+        if params[:city] != ''
+            puts "has city filter"
             @city = City.find_by(name: params[:city]) 
             puts @city
             puts @city.id
             @posts = @posts.where(city_id: @city.id)
         end
-        #filtered by category
-        if params[:category]
-            @posts = @posts.where(category: params[:category])
-        end
-    end
 
+        if params[:category] && params[:category] != ''
+            puts "has category filter"
+            @posts.each {|post| puts post.category }
+            @posts = @posts.where(category: params[:category])
+            puts "after filtered with catgory....."
+            @posts.each {|post| puts post.category }
+        end
+
+        return @posts
+    end
 end

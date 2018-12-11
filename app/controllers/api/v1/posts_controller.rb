@@ -34,7 +34,7 @@ class Api::V1::PostsController < Api::V1::BaseController
         
         @posts
     end
-    
+
     def trend(posts)
         puts "trending ordering"
         @posts = posts
@@ -63,7 +63,9 @@ class Api::V1::PostsController < Api::V1::BaseController
     def show 
         puts @post
         render json: {
-            post: @post
+            shared_by: {name: @post.user.name, avatar: @post.user.avatar},
+            post: @post,
+            city: City.find(@post[:city_id])
         }
     end
     

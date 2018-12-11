@@ -1,6 +1,36 @@
 # app/controllers/api/v1/posts_controller.rb
 class Api::V1::PostsController < Api::V1::BaseController
     before_action :set_post, only: [:show, :update, :destroy, :upvote, :unvote]
+    
+    CITIES2EN = {
+        '北京': 'Beijing',
+        '上海': 'Shanghai',
+        '广州': 'Guangzhou',
+        '深圳': 'Shenzhen',
+        '武汉': 'Wuhan',
+        '西安': 'Xi an',
+        '杭州': 'Hangzhou',
+        '南京': 'Nanjing',
+        '成都': 'Chengdu',
+        '重庆': 'Chongqing',
+        '东莞': 'Dongguan',
+        '大连': 'Dalian',
+        '沈阳': 'Shenyang',
+        '苏州': 'Suzhou',
+        '昆明': 'Kunming',
+        '长沙': 'Changsha',
+        '合肥': 'Hefei',
+        '宁波': 'Ningbo',
+        '郑州': 'Zhengzhou',
+        '天津': 'Tianjin',
+        '青岛': 'Qingdao',
+        '济南': 'Jinan',
+        '哈尔滨': 'Harbin',
+        '长春': 'Changchun',
+        '福州': 'Fuzhou',
+        '香港': 'Hong Kong',
+        '澳门': 'Macao'
+    }
 
     CITIES = ['北京','上海','广州','深圳','武汉','西安','杭州','南京','成都','重庆','东莞','大连','沈阳','苏州','昆明','长沙','合肥','宁波','郑州','天津','青岛','济南','哈尔滨','长春','福州','香港','澳门']
 
@@ -39,13 +69,13 @@ class Api::V1::PostsController < Api::V1::BaseController
         end        
     end
 
-    def users_posts_by_recent
-        puts params
-        @user_posts = Post.where(user_id: params[:id] ).order(created_at: :desc)
-        render json: {
-          posts: @user_posts
-        }
-    end
+    # def users_posts_by_recent
+    #     puts params
+    #     @user_posts = Post.where(user_id: params[:id] ).order(created_at: :desc)
+    #     render json: {
+    #       posts: @user_posts
+    #     }
+    # end
   
     def show 
         puts @post
@@ -58,9 +88,8 @@ class Api::V1::PostsController < Api::V1::BaseController
     
     def update
         if @post.update(post_params)
-        #    render :show
         else
-        render_error
+            render_error
         end
     end
   
@@ -71,6 +100,7 @@ class Api::V1::PostsController < Api::V1::BaseController
     
     def create
         @post = Post.new(post_params)
+        @post.category = post_params[:category]
         @post.user_id = params[:id] if params[:id]
         # puts CITIES
         puts post_params
@@ -84,10 +114,8 @@ class Api::V1::PostsController < Api::V1::BaseController
                 puts "translate to en..."
                 puts CITIES_EN[index]
                 @city = City.find_or_create_by(name: CITIES_EN[index])
-                # @city = City.find_by(name: city)
                 @city.posts << @post if @city
-                # puts @city.name
-                @city.posts.each { |post| puts post }
+                # @city.posts.each { |post| puts post }
             end
         end
 
@@ -99,6 +127,25 @@ class Api::V1::PostsController < Api::V1::BaseController
         else
             render_error
         end
+    end
+
+    def get_current_city
+        puts "get current city......"
+        puts params[:current_city]
+
+        CITIES.each_with_index do |city, index|
+            if params[:current_city].match(city)
+                puts city
+                puts "translate to en..."
+                current_city = CITIES_EN[index]
+                # @city.posts.each { |post| puts post }
+                render json: {
+                    current_city: current_city
+                }
+            end
+        end
+        # puts CITIES2EN[:current_city]
+
     end
 
     private
@@ -119,15 +166,18 @@ class Api::V1::PostsController < Api::V1::BaseController
         puts "start filter"
         puts params
 
+        category = params[:category]
+        city = params[:city]
         @posts = posts
 
-        if params[:city] == 'All City' && params[:category] == 'All'
+        # by default, show all
+        if category == '' && params[:category] == ''
             puts "no filter"
             puts @posts
             return @posts
         end
 
-        if params[:city] != 'City'
+        if params[:city] != ''
             puts "has city filter"
             @city = City.find_by(name: params[:city]) 
             puts @city
@@ -135,7 +185,7 @@ class Api::V1::PostsController < Api::V1::BaseController
             @posts = @posts.where(city_id: @city.id)
         end
 
-        if params[:category] && params[:category] != 'All'
+        if params[:category] && params[:category] != ''
             puts "has category filter"
             @posts.each {|post| puts post.category }
             @posts = @posts.where(category: params[:category])

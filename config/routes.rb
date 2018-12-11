@@ -39,6 +39,8 @@ Rails.application.routes.draw do
       
       # edit user intro 
       post 'users/:id/intro', to: 'users#edit_intro'
+
+      get 'get_current_city', to: 'posts#get_current_city'
     end
   end
 end

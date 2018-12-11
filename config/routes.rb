@@ -8,12 +8,15 @@ Rails.application.routes.draw do
       post '/login', to: "users#login"
       post '/update_user_info', to: "users#update_user_info"
       
-      # show posts at index page
+      # all posts at index page
       get 'posts', to: 'posts#index' # done
-      get 'posts_by_trend', to: 'posts#trend'
+      # get 'posts_by_trend', to: 'posts#trend'
       # get 'posts/posts_by_category', to: 'posts#posts_by_category'
       # get 'posts/posts_by_city', to: 'posts#posts_by_city' 
       # get 'posts/posts_by_search', to: 'posts#posts_by_search'
+
+      # show specific post
+      get 'posts/:id', to: 'posts#show'
 
       # create posts
       post 'users/:id/posts', to: 'posts#create'
@@ -23,10 +26,10 @@ Rails.application.routes.draw do
       # get 'posts/:id/votes', to: 'posts#votes'
 
       # show users' posts at profile page
-      get 'users/:id/posts/by_recent', to: 'posts#users_posts_by_recent'
-      get 'posts/users_posts_by_category', to: 'posts#users_posts_by_category'
-      get 'posts/users_posts_by_city', to: 'posts#users_posts_by_city'
-      get 'posts/users_posts_by_search', to: 'posts#users_posts_by_search'
+      # get 'users/:id/posts/by_recent', to: 'posts#users_posts_by_recent'
+      # get 'posts/users_posts_by_category', to: 'posts#users_posts_by_category'
+      # get 'posts/users_posts_by_city', to: 'posts#users_posts_by_city'
+      # get 'posts/users_posts_by_search', to: 'posts#users_posts_by_search'
 
       #update posts
       put 'users/:id/posts/:id', to: 'posts#update'
@@ -36,7 +39,6 @@ Rails.application.routes.draw do
       
       # edit user intro 
       post 'users/:id/intro', to: 'users#edit_intro'
-      
     end
   end
 end

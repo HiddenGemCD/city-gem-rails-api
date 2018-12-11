@@ -2,7 +2,9 @@
 class Api::V1::PostsController < Api::V1::BaseController
     before_action :set_post, only: [:show, :update, :destroy, :upvote, :unvote]
 
-    CITIES = ['北京','上海','广州','深圳','武汉','西安','杭州','南京','成都','重庆','东莞','大连','沈阳','苏州','昆明','长沙','合肥','宁波','郑州','天津','青岛','济南','哈尔滨','长春','福州','广东省','江苏省','浙江省','四川省','海南省','福建省','山东省','江西省','广西','安徽省','河北省','河南省','湖北省','湖南省','陕西省','山西省','黑龙江省','辽宁省','吉林省','云南省','贵州省','甘肃省','内蒙古','宁夏','西藏','新疆','青海省','香港','澳门']
+    CITIES = ['北京','上海','广州','深圳','武汉','西安','杭州','南京','成都','重庆','东莞','大连','沈阳','苏州','昆明','长沙','合肥','宁波','郑州','天津','青岛','济南','哈尔滨','长春','福州','香港','澳门']
+
+    CITIES_EN = ['Beijing','Shanghai','Guangzhou','Shenzhen','Wuhan','Xi an','Hangzhou','Nanjing','Chengdu','Chongqing','Dongguan','Dalian','Shenyang','Suzhou','Kunming','Changsha','Hefei','Ningbo','Zhengzhou','Tianjin','Qingdao','Jinan','Harbin','Changchun','Fuzhou','Hong Kong','Macao']
   
     def index
         # show user's profile if user_id existed
@@ -13,7 +15,9 @@ class Api::V1::PostsController < Api::V1::BaseController
             if params[:city] || params[:category]
                 @posts = filtered_posts(@posts)
             end
+            
             @cities = @user.posts.all.map {|i| City.find(i.city_id).name}.uniq
+            @cities << 'City'
         else
             # show trending index page if no user_id existed
             # should ordered by trending. How?
@@ -30,25 +34,9 @@ class Api::V1::PostsController < Api::V1::BaseController
             end  
 
             @posts = trend(@posts)
+            
             @cities = Post.all.map {|i| City.find(i.city_id).name}.uniq
         end        
-    end
-
-    def trend(posts)
-        puts "trending ordering"
-        @posts = posts
-        puts @posts
-        address = @posts.map {|i| i.address}
-        count = {}
-        address.each do |i|
-            if count[i]
-                count[i] += 1
-            else
-                count[i] = 1
-            end
-        end
-        count = count.sort_by{|k, v| v}.reverse.to_a
-        count.map {|i| @posts.find_by( address: i[0])} 
     end
 
     def users_posts_by_recent
@@ -87,11 +75,16 @@ class Api::V1::PostsController < Api::V1::BaseController
         # puts CITIES
         puts post_params
 
-        CITIES.each do |city|
+        CITIES.each_with_index do |city, index|
             puts params[:address]
             # address to city 
             if post_params[:address].match(city)
-                @city = City.find_by(name: city)
+                puts "city_cn..."
+                puts city
+                puts "translate to en..."
+                puts CITIES_EN[index]
+                @city = City.find_or_create_by(name: CITIES_EN[index])
+                # @city = City.find_by(name: city)
                 @city.posts << @post if @city
                 # puts @city.name
                 @city.posts.each { |post| puts post }
@@ -107,26 +100,6 @@ class Api::V1::PostsController < Api::V1::BaseController
             render_error
         end
     end
-
-    # def upvote
-    #     @user = User.find(params[:user_id])
-    #     @post.upvote_by @user
-    #     @post.votes += 1
-    #     @post.save
-    #     puts @post.name
-    #     puts @post.votes_for.size
-    #     render json: {}, status: :ok
-    # end
-    
-    # def unvote
-    #     @user = User.find(params[:user_id])
-    #     @post.unvote_by @user
-    #     @post.votes -= 1
-    #     @post.save
-    #     puts @post.name
-    #     puts @post.votes_for.size
-    #     render json: {}, status: :ok
-    # end
 
     private
     
@@ -171,5 +144,22 @@ class Api::V1::PostsController < Api::V1::BaseController
         end
 
         return @posts
+    end
+
+    def trend(posts)
+        puts "trending ordering"
+        @posts = posts
+        puts @posts
+        address = @posts.map {|i| i.address}
+        count = {}
+        address.each do |i|
+            if count[i]
+                count[i] += 1
+            else
+                count[i] = 1
+            end
+        end
+        count = count.sort_by{|k, v| v}.reverse.to_a
+        count.map {|i| @posts.find_by( address: i[0])} 
     end
 end

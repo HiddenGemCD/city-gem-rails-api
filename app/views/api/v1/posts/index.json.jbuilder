@@ -1,3 +1,4 @@
+json.cities @cities
 json.post_qty @posts.size if @user
 json.city_qty @user.posts.map {|post| post.city_id}.uniq.size if @user
 json.posts do

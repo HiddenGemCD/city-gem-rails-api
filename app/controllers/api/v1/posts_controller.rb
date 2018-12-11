@@ -17,7 +17,7 @@ class Api::V1::PostsController < Api::V1::BaseController
             end
             
             @cities = @user.posts.all.map {|i| City.find(i.city_id).name}.uniq
-            @cities << 'City'
+      
         else
             # show trending index page if no user_id existed
             # should ordered by trending. How?
@@ -29,13 +29,13 @@ class Api::V1::PostsController < Api::V1::BaseController
             # if user trigger filter
             if params[:city] || params[:category]
                 @posts = filtered_posts(@posts)
-                puts "after filter"
-                puts @posts
+       
             end  
 
             @posts = trend(@posts)
             
             @cities = Post.all.map {|i| City.find(i.city_id).name}.uniq
+
         end        
     end
 
@@ -121,7 +121,7 @@ class Api::V1::PostsController < Api::V1::BaseController
 
         @posts = posts
 
-        if params[:city] == 'City' && params[:category] == 'All'
+        if params[:city] == 'All City' && params[:category] == 'All'
             puts "no filter"
             puts @posts
             return @posts
@@ -138,7 +138,7 @@ class Api::V1::PostsController < Api::V1::BaseController
         if params[:category] && params[:category] != 'All'
             puts "has category filter"
             @posts.each {|post| puts post.category }
-            @posts = @posts.where(category: params[:category].downcase)
+            @posts = @posts.where(category: params[:category])
             puts "after filtered with catgory....."
             @posts.each {|post| puts post.category }
         end

@@ -1,7 +1,7 @@
 json.cities @cities
 json.post_qty @posts.size if @user
 json.city_qty @user.posts.map {|post| post.city_id}.uniq.size if @user
-json.trending_counts @trending_counts
+json.trending_counts @trending_counts if !@user
 
 json.posts do
     json.array! @trending_posts do |post|

@@ -64,10 +64,14 @@ class Api::V1::PostsController < Api::V1::BaseController
        
             end  
 
-            @posts = trend(@posts)
+            
+            # @posts = trend(@posts)
+            count = trend(@posts)
+
+            @trending_posts = count.map {|i| @posts.find_by( address: i[0])} 
+            @trending_counts = count.map {|i| i[1]} 
             
             @cities = Post.all.map {|i| City.find(i.city_id).name}.uniq
-
         end        
     end
 
@@ -212,6 +216,6 @@ class Api::V1::PostsController < Api::V1::BaseController
             end
         end
         count = count.sort_by{|k, v| v}.reverse.to_a
-        count.map {|i| @posts.find_by( address: i[0])} 
+        # count.map {|i| @posts.find_by( address: i[0])} 
     end
 end

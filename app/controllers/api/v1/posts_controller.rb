@@ -38,12 +38,16 @@ class Api::V1::PostsController < Api::V1::BaseController
   
     def index
         # show user's profile if user_id existed
+        puts params
         if params[:user_id]
             puts "profile: show user posts"
             @user = User.find(params[:user_id])
             @posts = @user.posts.order(created_at: :desc)
+            puts @posts
+            
             if params[:city] || params[:category]
                 @posts = filtered_posts(@posts)
+                puts @posts
             end
             
             @cities = @user.posts.all.map {|i| City.find(i.city_id).name}.uniq
@@ -64,13 +68,10 @@ class Api::V1::PostsController < Api::V1::BaseController
        
             end  
 
-            
             # @posts = trend(@posts)
             count = trend(@posts)
-
             @trending_posts = count.map {|i| @posts.find_by( address: i[0])} 
             @trending_counts = count.map {|i| i[1]} 
-            
             @cities = Post.all.map {|i| City.find(i.city_id).name}.uniq
         end        
     end

@@ -47,6 +47,8 @@ class Api::V1::PostsController < Api::V1::BaseController
             end
             
             @cities = @user.posts.all.map {|i| City.find(i.city_id).name}.uniq
+            @cities << 'All City'
+            @cities = @cities.reverse
       
         else
             # show trending index page if no user_id existed
@@ -171,21 +173,21 @@ class Api::V1::PostsController < Api::V1::BaseController
         @posts = posts
 
         # by default, show all
-        if category == '' && params[:category] == ''
+        if (category == '' || category == 'All Categories') && (city == '' || city == 'All City')
             puts "no filter"
             puts @posts
             return @posts
         end
 
-        if params[:city] != ''
+        if city != '' && city != 'All City'
             puts "has city filter"
-            @city = City.find_by(name: params[:city]) 
+            @city = City.find_by(name: city) 
             puts @city
             puts @city.id
             @posts = @posts.where(city_id: @city.id)
         end
 
-        if params[:category] && params[:category] != ''
+        if  category != '' && category != 'All Categories' 
             puts "has category filter"
             @posts.each {|post| puts post.category }
             @posts = @posts.where(category: params[:category])

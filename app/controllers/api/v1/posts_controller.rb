@@ -115,7 +115,7 @@ class Api::V1::PostsController < Api::V1::BaseController
 
         CITIES2EN.each do |key, value|
             if params[:current_city].match(key)
-                current_city = CITIES2EN[value]
+                current_city = CITIES2EN[key]
                 render json: {
                     current_city: current_city
                 }

@@ -113,12 +113,9 @@ class Api::V1::PostsController < Api::V1::BaseController
         puts "get current city......"
         puts params[:current_city]
 
-        CITIES.each_with_index do |city, index|
-            if params[:current_city].match(city)
-                puts city
-                puts "translate to en..."
-                current_city = CITIES_EN[index]
-                # @city.posts.each { |post| puts post }
+        CITIES2EN.each do |key, value|
+            if params[:current_city].match(key)
+                current_city = CITIES2EN[value]
                 render json: {
                     current_city: current_city
                 }

@@ -3,43 +3,38 @@ class Api::V1::PostsController < Api::V1::BaseController
     before_action :set_post, only: [:show, :update, :destroy, :upvote, :unvote]
     
     CITIES2EN = {
-        '北京': 'Beijing',
-        '上海': 'Shanghai',
-        '广州': 'Guangzhou',
-        '深圳': 'Shenzhen',
-        '武汉': 'Wuhan',
-        '西安': 'Xi an',
-        '杭州': 'Hangzhou',
-        '南京': 'Nanjing',
-        '成都': 'Chengdu',
-        '重庆': 'Chongqing',
-        '东莞': 'Dongguan',
-        '大连': 'Dalian',
-        '沈阳': 'Shenyang',
-        '苏州': 'Suzhou',
-        '昆明': 'Kunming',
-        '长沙': 'Changsha',
-        '合肥': 'Hefei',
-        '宁波': 'Ningbo',
-        '郑州': 'Zhengzhou',
-        '天津': 'Tianjin',
-        '青岛': 'Qingdao',
-        '济南': 'Jinan',
-        '哈尔滨': 'Harbin',
-        '长春': 'Changchun',
-        '福州': 'Fuzhou',
-        '香港': 'Hong Kong',
-        '澳门': 'Macao'
+        '北京' => 'Beijing',
+        '上海' => 'Shanghai',
+        '广州' => 'Guangzhou',
+        '深圳' => 'Shenzhen',
+        '武汉' => 'Wuhan',
+        '西安' => 'Xi an',
+        '杭州' => 'Hangzhou',
+        '南京' => 'Nanjing',
+        '成都' => 'Chengdu',
+        '重庆' => 'Chongqing',
+        '东莞' => 'Dongguan',
+        '大连' => 'Dalian',
+        '沈阳' => 'Shenyang',
+        '苏州' => 'Suzhou',
+        '昆明' => 'Kunming',
+        '长沙' => 'Changsha',
+        '合肥' => 'Hefei',
+        '宁波' => 'Ningbo',
+        '郑州' => 'Zhengzhou',
+        '天津' => 'Tianjin',
+        '青岛' => 'Qingdao',
+        '济南' => 'Jinan',
+        '哈尔滨' => 'Harbin',
+        '长春' => 'Changchun',
+        '福州' => 'Fuzhou',
+        '香港' => 'Hong Kong',
+        '澳门' => 'Macao'
     }
 
-    CITIES = ['北京','上海','广州','深圳','武汉','西安','杭州','南京','成都','重庆','东莞','大连','沈阳','苏州','昆明','长沙','合肥','宁波','郑州','天津','青岛','济南','哈尔滨','长春','福州','香港','澳门']
-
-    CITIES_EN = ['Beijing','Shanghai','Guangzhou','Shenzhen','Wuhan','Xi an','Hangzhou','Nanjing','Chengdu','Chongqing','Dongguan','Dalian','Shenyang','Suzhou','Kunming','Changsha','Hefei','Ningbo','Zhengzhou','Tianjin','Qingdao','Jinan','Harbin','Changchun','Fuzhou','Hong Kong','Macao']
-  
     def index
         # show user's profile if user_id existed
         if params[:user_id]
-            puts "profile: show user posts"
             @user = User.find(params[:user_id])
             @posts = @user.posts.order(created_at: :desc)
             puts @posts
@@ -52,22 +47,12 @@ class Api::V1::PostsController < Api::V1::BaseController
             @cities = @user.posts.all.map {|i| City.find(i.city_id).name}.uniq
             @cities << 'All City'
             @cities = @cities.reverse
-      
         else
-            # show trending index page if no user_id existed
-            # should ordered by trending. How?
-            puts "========================="
-            puts "trending index page"
-            puts params
             @posts = Post.all
-
             # if user trigger filter
             if params[:city] || params[:category]
                 @posts = filtered_posts(@posts)
-       
             end  
-
-            # @posts = trend(@posts)
             count = trend(@posts)
             @trending_posts = count.map {|i| @posts.find_by( address: i[0])} 
             @trending_counts = count.map {|i| i[1]} 
@@ -75,18 +60,13 @@ class Api::V1::PostsController < Api::V1::BaseController
         end        
     end
 
-    # def users_posts_by_recent
-    #     puts params
-    #     @user_posts = Post.where(user_id: params[:id] ).order(created_at: :desc)
-    #     render json: {
-    #       posts: @user_posts
-    #     }
-    # end
-  
     def show 
         puts @post
         render json: {
-            shared_by: {name: @post.user.name, avatar: @post.user.avatar},
+            shared_by: { 
+                name: @post.user.name, 
+                avatar: @post.user.avatar
+            },
             post: @post,
             city: City.find(@post[:city_id])
         }
@@ -108,20 +88,14 @@ class Api::V1::PostsController < Api::V1::BaseController
         @post = Post.new(post_params)
         @post.category = post_params[:category]
         @post.user_id = params[:id] if params[:id]
-        # puts CITIES
-        puts post_params
 
-        CITIES.each_with_index do |city, index|
-            puts params[:address]
+        CITIES2EN.each do |key, value|
+            puts key
+            puts value
             # address to city 
-            if post_params[:address].match(city)
-                puts "city_cn..."
-                puts city
-                puts "translate to en..."
-                puts CITIES_EN[index]
-                @city = City.find_or_create_by(name: CITIES_EN[index])
+            if post_params[:address].match(key)
+                @city = City.find_or_create_by(name: value)
                 @city.posts << @post if @city
-                # @city.posts.each { |post| puts post }
             end
         end
 
@@ -150,8 +124,6 @@ class Api::V1::PostsController < Api::V1::BaseController
                 }
             end
         end
-        # puts CITIES2EN[:current_city]
-
     end
 
     private
@@ -216,6 +188,5 @@ class Api::V1::PostsController < Api::V1::BaseController
             end
         end
         count = count.sort_by{|k, v| v}.reverse.to_a
-        # count.map {|i| @posts.find_by( address: i[0])} 
     end
 end

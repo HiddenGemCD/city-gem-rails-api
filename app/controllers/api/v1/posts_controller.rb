@@ -45,7 +45,7 @@ class Api::V1::PostsController < Api::V1::BaseController
             end
             
             @cities = @user.posts.all.map {|i| City.find(i.city_id).name}.uniq
-            @cities << 'All City'
+            @cities << 'All Cities'
             @cities = @cities.reverse
         else
             @posts = Post.all
@@ -149,13 +149,13 @@ class Api::V1::PostsController < Api::V1::BaseController
         @posts = posts
 
         # by default, show all
-        if (category == '' || category == 'All Categories') && (city == '' || city == 'All City')
+        if (category == '' || category == 'All Categories') && (city == '' || city == 'All Cities')
             puts "no filter"
             puts @posts
             return @posts
         end
 
-        if city != '' && city != 'All City'
+        if city != '' && city != 'All Cities'
             puts "has city filter"
             @city = City.find_by(name: city) 
             puts @city

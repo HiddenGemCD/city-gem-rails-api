@@ -38,7 +38,6 @@ class Api::V1::PostsController < Api::V1::BaseController
   
     def index
         # show user's profile if user_id existed
-        puts params
         if params[:user_id]
             puts "profile: show user posts"
             @user = User.find(params[:user_id])

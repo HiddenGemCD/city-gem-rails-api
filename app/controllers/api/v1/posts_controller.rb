@@ -96,6 +96,8 @@ class Api::V1::PostsController < Api::V1::BaseController
     
     def update
         if @post.update(post_params)
+            # @post.tagstring = ""
+            @post.tagstring = post_params[:tagstring]
             tags = post_params[:tagstring].split(',').map{ |i| i.strip }
             @post.tag_list = ""
             @post.tag_list.add(tags)

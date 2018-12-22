@@ -29,7 +29,8 @@ class Api::V1::PostsController < Api::V1::BaseController
         '长春' => 'Changchun',
         '福州' => 'Fuzhou',
         '香港' => 'Hong Kong',
-        '澳门' => 'Macao'
+        '澳门' => 'Macao',
+        '' => 'All'
     }
 
     def index
@@ -56,7 +57,7 @@ class Api::V1::PostsController < Api::V1::BaseController
             count = trend(@posts)
             @trending_posts = count.map {|i| @posts.find_by( address: i[0])} 
             @trending_counts = count.map {|i| i[1]} 
-            @cities = Post.all.map {|i| City.find(i.city_id).name}.uniq
+            @cities = City.all.map {|i| i.name}
         end        
     end
 
@@ -75,6 +76,7 @@ class Api::V1::PostsController < Api::V1::BaseController
     def update
         if @post.update(post_params)
             tags = post_params[:tagstring].split(',').map{ |i| i.strip }
+            @post.tag_list = ""
             @post.tag_list.add(tags)
             @post.save
         else
@@ -119,6 +121,7 @@ class Api::V1::PostsController < Api::V1::BaseController
         CITIES2EN.each do |key, value|
             if params[:current_city].match(key)
                 current_city = CITIES2EN[key]
+                City.find_or_create_by(name: current_city)
                 render json: {
                     current_city: current_city
                 }
@@ -149,13 +152,13 @@ class Api::V1::PostsController < Api::V1::BaseController
         @posts = posts
 
         # by default, show all
-        if (category == '' || category == 'All Categories') && (city == '' || city == 'All Cities')
+        if (category == '' || category == 'All Categories') && (city == '' || city == 'All Cities' || city == 'All')
             puts "no filter"
             puts @posts
             return @posts
         end
 
-        if city != '' && city != 'All Cities'
+        if city != '' && city != 'All Cities' && city != 'All'
             puts "has city filter"
             @city = City.find_by(name: city) 
             puts @city

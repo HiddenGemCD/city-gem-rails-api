@@ -1,4 +1,6 @@
-# app/controllers/api/v1/posts_controller.rb
+require 'open-uri'
+require 'json'
+
 class Api::V1::PostsController < Api::V1::BaseController
     before_action :set_post, only: [:show, :update, :destroy, :upvote, :unvote]
     
@@ -30,7 +32,25 @@ class Api::V1::PostsController < Api::V1::BaseController
         '福州' => 'Fuzhou',
         '香港' => 'Hong Kong',
         '澳门' => 'Macao',
-        '' => 'All Cities'
+        '台北' => 'Taipei',
+        '高雄' => 'Kaohsiung',
+        '宜兰' => 'Yilan',
+        '桃园' => 'Taoyuan',
+        '新竹' => 'Hsinchu',
+        '苗栗' => 'Miaoli',
+        '台中' => 'Taichung',
+        '彰化' => 'Changhua',
+        '南投' => 'Nantou',
+        '云林' => 'Yunlin',
+        '嘉义' => 'Chiayi',
+        '台南' => 'Tainan',
+        '屏东' => 'Pingtung',
+        '台东' => 'Taitung',
+        '花莲' => 'Hualien',
+        '澎湖' => 'Penghu',
+        '基隆' => 'Keelung',
+        '連江' => 'Lienchiang',
+        '金門' => 'Kinmen'
     }
 
     def index
@@ -75,6 +95,7 @@ class Api::V1::PostsController < Api::V1::BaseController
     
     def update
         if @post.update(post_params)
+            @post.tagstring = post_params[:tagstring]
             tags = post_params[:tagstring].split(',').map{ |i| i.strip }
             @post.tag_list = ""
             @post.tag_list.add(tags)
@@ -94,15 +115,42 @@ class Api::V1::PostsController < Api::V1::BaseController
         @post.category = post_params[:category]
         @post.user_id = params[:id] if params[:id]
 
+        # current_city = params[:city]
+
+        puts "city in chinese...#{params[:city]}"
+        
+        matched = false
         CITIES2EN.each do |key, value|
             puts key
             puts value
             # address to city 
-            if post_params[:address].match(key)
+            if params[:city].match(key)
                 @city = City.find_or_create_by(name: value)
                 @city.posts << @post if @city
+                matched = true
             end
         end
+
+        if !matched
+            url = 'http://fy.iciba.com/ajax.php?a=fy&f=zh&t=en&w=' + params[:city]
+            url = URI.parse(URI.escape(url))
+
+            puts url
+            response = open(url).read
+            data = JSON.parse(response)
+
+            puts data
+            city = data['content']['out']
+            city.slice!('[地名] [中国]')
+            city.slice!('City')
+            city.slice!('Province')
+            city = city.strip
+            @city = City.find_or_create_by(name: city)
+            @city.posts << @post if @city
+            @city = City.find_or_create_by(name: city)
+            @city.posts << @post if @city
+        end
+        
 
         # tagstring to tags
         tags = post_params[:tagstring].split(',').map{ |i| i.strip }
@@ -117,15 +165,35 @@ class Api::V1::PostsController < Api::V1::BaseController
     def get_current_city
         puts "get current city......"
         puts params[:current_city]
-
+        # current_city = params[:current_city]
+        matched = false
         CITIES2EN.each do |key, value|
             if params[:current_city].match(key)
                 current_city = CITIES2EN[key]
                 City.find_or_create_by(name: current_city)
+                matched = true
                 render json: {
                     current_city: current_city
                 }
             end
+        end
+
+        if !matched
+            url = 'http://fy.iciba.com/ajax.php?a=fy&f=zh&t=en&w=' + params[:current_city]
+            url = URI.parse(URI.escape(url))
+            puts url
+            response = open(url).read
+            data = JSON.parse(response)
+            puts data
+            city = data['content']['out']
+            city.slice!('[地名] [中国]')
+            city.slice!('City')
+            city.slice!('Province')
+            city = city.strip
+
+            render json: {
+                current_city: city
+            }
         end
     end
 

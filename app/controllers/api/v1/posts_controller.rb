@@ -30,7 +30,7 @@ class Api::V1::PostsController < Api::V1::BaseController
         '福州' => 'Fuzhou',
         '香港' => 'Hong Kong',
         '澳门' => 'Macao',
-        '' => 'All'
+        '' => 'All Cities'
     }
 
     def index

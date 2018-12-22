@@ -21,6 +21,7 @@ class Api::V1::UsersController < Api::V1::BaseController
     end
 
     def update_user_info
+        puts params 
         puts "update user info"
         @user = User.find(params[:id])
         @user.name = params[:name]

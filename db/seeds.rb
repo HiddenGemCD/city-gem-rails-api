@@ -23,3 +23,4 @@ CITIES = ['北京','上海','广州','深圳','武汉','西安','杭州','南京
 CITIES.each do |city|
     City.create!(name: city)
 end
+

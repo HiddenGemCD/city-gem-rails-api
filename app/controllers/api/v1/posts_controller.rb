@@ -66,7 +66,6 @@ class Api::V1::PostsController < Api::V1::BaseController
             end
             
             @cities = @user.posts.all.map {|i| City.find(i.city_id).name}.uniq
-            @cities << 'All Cities'
             @cities = @cities.reverse
         else
             @posts = Post.all
@@ -77,7 +76,8 @@ class Api::V1::PostsController < Api::V1::BaseController
             count = trend(@posts)
             @trending_posts = count.map {|i| @posts.find_by( address: i[0])} 
             @trending_counts = count.map {|i| i[1]} 
-            @cities = City.all.map {|i| i.name}
+            @cities = City.all.select { |city| city.posts.size > 0 }.map {|i| i.name}
+            @cities << 'All Cities'
         end        
     end
 

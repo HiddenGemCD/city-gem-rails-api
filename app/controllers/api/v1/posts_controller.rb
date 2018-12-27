@@ -165,6 +165,7 @@ class Api::V1::PostsController < Api::V1::BaseController
     def get_current_city
         puts "get current city......"
         puts params[:current_city]
+
         # current_city = params[:current_city]
         matched = false
         CITIES2EN.each do |key, value|
